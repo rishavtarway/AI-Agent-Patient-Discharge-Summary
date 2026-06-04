@@ -42,11 +42,14 @@ class MultiOCRExtractor:
     def __init__(self, output_dir="/content/extracted_data"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
-        print("[*] Initializing OCR engines...\n")
+        # Check for GPU availability
+        import torch
+        use_gpu = torch.cuda.is_available()
+        print(f"[*] GPU available: {use_gpu}. Using GPU: {use_gpu}")
         
         self.pytesseract = pytesseract
-        self.easyocr_reader = easyocr.Reader(['en'], gpu=False, model_storage_directory='/tmp/easyocr')
-        self.paddleocr_reader = paddleocr.PaddleOCR(use_angle_cls=True, lang='en')
+        self.easyocr_reader = easyocr.Reader(['en'], gpu=use_gpu, model_storage_directory='/tmp/easyocr')
+        self.paddleocr_reader = paddleocr.PaddleOCR(use_angle_cls=True, lang='en', use_gpu=use_gpu)
         print("\n[+] All OCR engines initialized!\n")
     
     def extract_from_pdf(self, pdf_path):
