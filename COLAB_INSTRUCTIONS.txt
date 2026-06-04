@@ -1,0 +1,60 @@
+🚀 GOOGLE COLAB SETUP - 30 MINUTES CHALLENGE
+
+═══════════════════════════════════════════════════════════════════════════════
+
+⏱️ FASTEST PATH (5 MINUTES):
+
+1. Open: https://colab.research.google.com
+
+2. Create NEW notebook (blank)
+
+3. In FIRST cell, paste this:
+
+!pip install -q easyocr paddleocr pytesseract pdf2image opencv-python numpy pillow
+!apt-get update -qq && apt-get install -y -qq tesseract-ocr poppler-utils
+from google.colab import files, drive
+drive.mount('/content/drive')
+files.upload()
+
+4. In SECOND cell, paste the full extraction code from Medical_OCR_Extractor_Colab.ipynb
+
+5. DONE! JSON downloads automatically
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📱 USING THE NOTEBOOK FILE (RECOMMENDED - 2 MINUTES):
+
+1. Visit: https://colab.research.google.com
+
+2. Click: File → Open Notebook
+
+3. Click: Upload tab
+
+4. Select: Medical_OCR_Extractor_Colab.ipynb
+
+5. Click: Run all (or run cell by cell)
+
+6. Upload PDF when prompted
+
+7. Get JSON automatically
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ WHAT HAPPENS:
+   • PDF uploaded to Colab
+   • 3 OCR engines run in parallel
+   • Medical fields extracted
+   • JSON generated
+   • File downloads
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📥 THEN IN YOUR AGENT:
+   • Load patient_data.json
+   • Process medical fields
+   • Generate discharge summary
+   • Submit!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+NO CODING NEEDED - Just run the cells!
