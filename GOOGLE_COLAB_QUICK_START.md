@@ -46,7 +46,21 @@ class MultiOCRExtractor:
         
         self.pytesseract = pytesseract
         self.easyocr_reader = easyocr.Reader(['en'], gpu=use_gpu, model_storage_directory='/tmp/easyocr')
-        self.paddleocr_reader = paddleocr.PaddleOCR(use_angle_cls=True, lang='en', use_gpu=use_gpu)
+        # PaddleOCR uses `use_gpu` argument inside Colab, but depending on the pip version, it might accept it or need it in lowercase/uppercase.
+        # We can dynamically pass parameters to PaddleOCR to prevent ValueError
+        paddle_kwargs = {
+            "lang": "en",
+            "use_textline_orientation": True,
+            "show_log": False
+        }
+        if use_gpu:
+            paddle_kwargs["use_gpu"] = True
+        
+        try:
+            self.paddleocr_reader = paddleocr.PaddleOCR(**paddle_kwargs)
+        except Exception as e:
+            print(f"[!] Warning: PaddleOCR failed to initialize with GPU options, falling back to CPU: {e}")
+            self.paddleocr_reader = paddleocr.PaddleOCR(lang='en')
         print("\n[+] All OCR engines initialized!\n")
     
     def extract_from_pdf(self, pdf_path):
