@@ -16,9 +16,6 @@
 !pip install -q easyocr paddleocr pytesseract pdf2image opencv-python numpy pillow
 !apt-get update -qq && apt-get install -y -qq tesseract-ocr poppler-utils
 
-# Mount Drive
-from google.colab import drive
-drive.mount('/content/drive')
 
 # Upload PDF
 from google.colab import files
