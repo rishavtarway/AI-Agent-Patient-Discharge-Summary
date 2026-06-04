@@ -156,20 +156,33 @@ class MultiOCRExtractor:
         
         return fields
     
+
+    
     def process_image(self, image_path, page_num, total):
-        print(f"[{page_num}/{total}] Processing...")
+        print(f"[{page_num}/{total}] Processing: {Path(image_path).name} (Sequential Mode)...")
+        import gc
+        import torch
         
-        with ThreadPoolExecutor(max_workers=3) as executor:
-            futures = {
-                'tesseract': executor.submit(self.ocr_tesseract, image_path),
-                'easyocr': executor.submit(self.ocr_easyocr, image_path),
-                'paddleocr': executor.submit(self.ocr_paddleocr, image_path),
-            }
-            results = {name: future.result(timeout=120) for name, future in futures.items()}
+        # Run OCR engines sequentially instead of parallel to avoid running out of RAM
+        results = {}
+        
+        # 1. Run Tesseract (Fast, low RAM)
+        results['tesseract'] = self.ocr_tesseract(image_path)
+        
+        # 2. Run EasyOCR
+        results['easyocr'] = self.ocr_easyocr(image_path)
+        
+        # 3. Run PaddleOCR
+        results['paddleocr'] = self.ocr_paddleocr(image_path)
         
         merged = self.merge_ocr_results(list(results.values()))
         medical = self.parse_medical_fields(merged["merged_text"])
         
+        # Force garbage collection and empty CUDA cache after each page to free up RAM
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            
         return {
             "page": page_num,
             "confidence": merged["confidence"],
@@ -177,7 +190,7 @@ class MultiOCRExtractor:
             "medical_fields": medical,
             "full_text": merged["merged_text"]
         }
-    
+        
     def process_batch(self, image_paths):
         return [self.process_image(img, i, len(image_paths)) for i, img in enumerate(image_paths, 1)]
     
